@@ -13,6 +13,7 @@ import logging
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from pip._vendor.html5lib.constants import htmlIntegrationPointElements
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -47,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -129,3 +130,38 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+from django.utils.log import DEFAULT_LOGGING
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'customHandler': {
+            'level': 'DEBUG',
+            'class': 'myproj.custom_logging.MyCustomHandler'
+        },
+        'sentry': {
+            'level': "DEBUG",
+            'class': 'sentry_sdk.integrations.logging.BreadcrumbHandler'
+        }
+    },
+    'loggers': {
+        'customLogger': {
+            'handlers': ['customHandler', 'sentry'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+import sentry_sdk
+sentry_logging = LoggingIntegration(
+   level=logging.DEBUG,        # Capture info and above as breadcrumbs
+   event_level=logging.INFO    # Send INFO as events
+)
+
+sentry_sdk.init(
+    "https://7ff9456caaef460dbc07c07590cbdf10@sentry.io/1831844",
+    integrations=[sentry_logging]
+)

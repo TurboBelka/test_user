@@ -1,4 +1,6 @@
+import json
 import logging
+from http.client import HTTPResponse
 
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
@@ -6,12 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import ListView
 
 from .forms import RegistrationForm, ProfileForm, AuthForm
 from .models import Users
 
-logger = logging.getLogger('django')
+logger = logging.getLogger('customLogger')
 
 def get_current_user(request):
     return render(request, 'users/loggedin.html')
@@ -71,3 +74,14 @@ class UsersView(ListView):
     template_name = 'users/index.html'
     context_object_name = 'users_list'
     model = Users
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context_data = super().get_context_data(object_list=object_list, **kwargs)
+        logger.info("Context: %s", context_data["page_obj"])
+        return context_data
+
+
+class Log(View):
+    def post(self, request):
+        print(request.POST.get("log"))
+        return render(request, 'users/loggedin.html')

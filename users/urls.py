@@ -11,4 +11,5 @@ urlpatterns = [
     re_path(r'^loggedin', views.get_current_user, name='loggedin'),
     re_path(r'^registration', views.register_user, name='registration'),
     re_path(r'^profile', views.profile, name='profile'),
+    re_path(r'^log', views.Log.as_view(), name='log'),
 ]
