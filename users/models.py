@@ -6,7 +6,8 @@ class Users(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     photo = models.ImageField(blank=True,
                               upload_to="static/user_photo")
-    age = models.IntegerField()
+    age = models.IntegerField(default=0)
+    last_login = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.user.username

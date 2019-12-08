@@ -11,6 +11,8 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
 
+from myproj.celery_app import app
+from users.tasks import square_root, send_message
 from .forms import RegistrationForm, ProfileForm, AuthForm
 from .models import Users
 
@@ -77,6 +79,14 @@ class UsersView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
+        # result = app.send_task('users.tasks.square_root', args=(4,))
+        # print(result.ready())
+        # print(result.get(timeout=5))
+        res = square_root.apply_async(args=(4,), queue="square_root")
+        print(res.ready())
+        print(res.get(timeout=2))
+        res = send_message.apply_async(queue="send_message")
+        print(res.ready())
         logger.info("Context: %s", context_data["page_obj"])
         return context_data
 

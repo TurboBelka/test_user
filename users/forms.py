@@ -1,3 +1,5 @@
+import datetime
+
 from PIL import Image
 from django.forms import ImageField
 from django.contrib.auth.models import User
@@ -14,7 +16,11 @@ class FormControlMixin(object):
 
 
 class AuthForm(FormControlMixin, AuthenticationForm):
-    pass
+    def get_user(self):
+        user = Users.objects.get(user=self.user_cache)
+        user.last_login = datetime.datetime.now()
+        user.save()
+        return self.user_cache
 
 
 class RegistrationForm(FormControlMixin, UserCreationForm):

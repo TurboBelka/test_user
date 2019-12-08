@@ -18,4 +18,4 @@ class UserModelsTest(TransactionTestCase):
         )
         self.assertEqual(user.user.username, "test")
         self.assertEqual(user.user.email, "test@example.com")
-
+        self.assertFalse(user.is_adult())
